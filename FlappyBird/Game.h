@@ -1,5 +1,6 @@
 #pragma once
 #include <Windows.h>
+#include <graphics.h>
 
 // 游戏状态枚举
 enum class GameState {
@@ -20,6 +21,7 @@ struct KeyState {
     bool spacePressed;  // 空格键刚刚按下
     bool spaceDown;     // 空格键正被按住
     bool escapePressed; // ESC键按下
+    bool escapeDown;    // [新添加] 用于记录 ESC 键的物理按下状态
 };
 
 class Game {
@@ -46,6 +48,25 @@ private:
     DWORD lastTime;      // 上一帧的时间（毫秒）
     DWORD currentTime;   // 当前时间（毫秒）
     float deltaTime;     // 两帧之间的时间差（秒）
+
+    //暂停菜单相关
+    int selectedOption = 0;         // 当前选中的选项索引 (0: 继续, 1: 难度增加, 2: 难度减小, 3: 退出)
+    const int MAX_OPTIONS = 6;      // 菜单选项总数
+    bool upKeyPressed = false;      // 防抖动：向上键状态
+    bool downKeyPressed = false;    // 防抖动：向下键状态
+    bool enterKeyPressed = false;   // 防抖动：回车键状态
+
+    // --- [新定义] 菜单布局常量 ---
+    const int MENU_X = 200;       // 菜单左侧起点
+    const int MENU_Y_START = 200; // 第一行高度
+    const int ITEM_HEIGHT = 50;   // 每行高度
+    const int ITEM_WIDTH = 400;   // 响应鼠标的宽度
+
+    // --- [新定义] 鼠标状态 ---
+    ExMessage msg;                // EasyX 消息对象，用于获取鼠标坐标
+
+    //
+    void ApplyMenuOption();
 
 public:
     // 构造函数 - 创建游戏对象时调用

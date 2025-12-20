@@ -66,6 +66,12 @@ public:
     float GetX() const { return posX; }  // 获取X坐标
     float GetY() const { return posY; }  // 获取Y坐标
 
+    //参数修改接口
+    float GetGravity() const { return gravity; }
+    void SetGravity(float g) { gravity = g; }
+    float GetJumpForce() const { return jumpForce; }
+    void SetJumpForce(float f) { jumpForce = f; }
+
 private:
     // 更新碰撞矩形的位置（跟随小鸟位置）
     void UpdateCollisionBox();
