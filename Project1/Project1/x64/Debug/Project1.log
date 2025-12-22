@@ -1,0 +1,18 @@
+﻿  源.cpp
+C:\Users\陈泓宇\Desktop\Project1\源.cpp(127,21): warning C4244: “初始化”: 从“int”转换到“float”，可能丢失数据
+C:\Users\陈泓宇\Desktop\Project1\源.cpp(142,20): warning C4244: “=”: 从“int”转换到“float”，可能丢失数据
+C:\Users\陈泓宇\Desktop\Project1\源.cpp(143,20): warning C4244: “=”: 从“int”转换到“float”，可能丢失数据
+C:\Users\陈泓宇\Desktop\Project1\源.cpp(153,24): warning C4244: “=”: 从“int”转换到“float”，可能丢失数据
+C:\Users\陈泓宇\Desktop\Project1\源.cpp(228,17): warning C4244: “=”: 从“int”转换到“float”，可能丢失数据
+C:\Users\陈泓宇\Desktop\Project1\源.cpp(232,47): warning C4244: “=”: 从“int”转换到“float”，可能丢失数据
+C:\Users\陈泓宇\Desktop\Project1\源.cpp(353,20): warning C4244: “=”: 从“int”转换到“float”，可能丢失数据
+C:\Users\陈泓宇\Desktop\Project1\源.cpp(1650,13): warning C4566: 由通用字符名称“\u2022”表示的字符不能在当前代码页(936)中表示出来
+C:\Users\陈泓宇\Desktop\Project1\源.cpp(1651,13): warning C4566: 由通用字符名称“\u2022”表示的字符不能在当前代码页(936)中表示出来
+C:\Users\陈泓宇\Desktop\Project1\源.cpp(1652,13): warning C4566: 由通用字符名称“\u2022”表示的字符不能在当前代码页(936)中表示出来
+C:\Users\陈泓宇\Desktop\Project1\源.cpp(1653,13): warning C4566: 由通用字符名称“\u2022”表示的字符不能在当前代码页(936)中表示出来
+C:\Users\陈泓宇\Desktop\Project1\源.cpp(1654,13): warning C4566: 由通用字符名称“\u2022”表示的字符不能在当前代码页(936)中表示出来
+C:\Users\陈泓宇\Desktop\Project1\源.cpp(1655,13): warning C4566: 由通用字符名称“\u2022”表示的字符不能在当前代码页(936)中表示出来
+C:\Users\陈泓宇\Desktop\Project1\源.cpp(1656,13): warning C4566: 由通用字符名称“\u2022”表示的字符不能在当前代码页(936)中表示出来
+C:\Users\陈泓宇\Desktop\Project1\源.cpp(1657,13): warning C4566: 由通用字符名称“\u2022”表示的字符不能在当前代码页(936)中表示出来
+C:\Users\陈泓宇\Desktop\Project1\源.cpp(1658,13): warning C4566: 由通用字符名称“\u2022”表示的字符不能在当前代码页(936)中表示出来
+  Project1.vcxproj -> C:\Users\陈泓宇\Desktop\Project1\x64\Debug\Project1.exe
