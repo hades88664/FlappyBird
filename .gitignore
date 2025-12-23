@@ -376,3 +376,41 @@ x64/
 
 # 大资源文件（可选忽略）
 assets/sounds/
+/FlappyBird/ConsoleApplication1.cpp
+/FlappyBird/FlappyBird/assets/die.wav.wav
+/FlappyBird/FlappyBird/assets/hit.wav.wav
+/FlappyBird/FlappyBird/assets/jump.wav.wav
+/FlappyBird/FlappyBird/assets/score.wav.wav
+/FlappyBird/鎿嶄綔姝ラ/# CMakeLists.txt
+/FlappyBird/x64/Debug/FlappyBird.pdb
+/FlappyBird/x64/Debug/FlappyBird.exe
+/FlappyBird/FlappyBird/x64/Debug/vc143.pdb
+/FlappyBird/FlappyBird/x64/Debug/PipeManager.obj
+/FlappyBird/FlappyBird/x64/Debug/main.obj.enc
+/FlappyBird/FlappyBird/x64/Debug/main.obj
+/FlappyBird/FlappyBird/x64/Debug/Game.obj
+/FlappyBird/FlappyBird/x64/Debug/FlappyBird.tlog/link.write.1.tlog
+/FlappyBird/FlappyBird/x64/Debug/FlappyBird.tlog/link.secondary.1.tlog
+/FlappyBird/FlappyBird/x64/Debug/FlappyBird.tlog/link.read.1.tlog
+/FlappyBird/FlappyBird/x64/Debug/FlappyBird.tlog/link.command.1.tlog
+/FlappyBird/FlappyBird/x64/Debug/FlappyBird.tlog/CL.write.1.tlog
+/FlappyBird/FlappyBird/x64/Debug/FlappyBird.tlog/CL.read.1.tlog
+/FlappyBird/FlappyBird/x64/Debug/FlappyBird.tlog/Cl.items.tlog
+/FlappyBird/FlappyBird/x64/Debug/FlappyBird.tlog/CL.command.1.tlog
+/FlappyBird/FlappyBird/x64/Debug/FlappyBird.log
+/FlappyBird/FlappyBird/x64/Debug/FlappyBird.exe.recipe
+/FlappyBird/FlappyBird/x64/Debug/Bird.obj
+/FlappyBird/FlappyBird/x64/Debug/Bird.obj
+/FlappyBird/FlappyBird/x64/Debug/FlappyBird.exe.recipe
+*.cpp
+/FlappyBird/include/娴嬭瘯鑿滃崟.h
+/FlappyBird/x64/Debug/FlappyBird.exe
+/FlappyBird/x64/Debug/FlappyBird.pdb
+/FlappyBird/FlappyBird/x64/Debug/PipeManager.obj
+/FlappyBird/FlappyBird/x64/Debug/main.obj.enc
+/FlappyBird/FlappyBird/x64/Debug/main.obj
+/FlappyBird/FlappyBird/x64/Debug/Game.obj
+/FlappyBird/FlappyBird/x64/Debug/FlappyBird.tlog/link.write.1.tlog
+/FlappyBird/FlappyBird/x64/Debug/FlappyBird.tlog/link.secondary.1.tlog
+/FlappyBird/FlappyBird/x64/Debug/FlappyBird.tlog/link.read.1.tlog
+/FlappyBird/FlappyBird/x64/Debug/FlappyBird.tlog/link.command.1.tlog
