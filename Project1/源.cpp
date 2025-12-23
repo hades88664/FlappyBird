@@ -1555,7 +1555,7 @@ public:
 
         const wchar_t* credits[] = {
             L"Game Design & Programming:",
-            L"  DeepSeek AI Assistant",
+            L" 羊能嘉，陈泓宇，侯美旭，郗晓祎",
             L"",
             L"Graphics & Animation:",
             L"  EasyX Graphics Library",
@@ -1663,4 +1663,5 @@ int main() {
     game.run();
 
     return 0;
+
 }
