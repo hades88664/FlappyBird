@@ -1,34 +1,40 @@
-﻿#define _CRT_SECURE_NO_WARNINGS
+﻿
 
-#include <graphics.h>
-#include <conio.h>
-#include <time.h>
-#include <windows.h>
+
+
+#define _CRT_SECURE_NO_WARNINGS// 禁用安全警告（如sprintf等）
+
+#include <graphics.h>  // EasyX图形库
+#include <conio.h>     // 控制台输入输出
+#include <time.h>      // 时间相关
+#include <windows.h>   // Windows API（用于高精度计时和GetAsyncKeyState）
 #include <vector>
 #include <string>
 #include <iostream>
-#include <fstream>
+#include <fstream>  // 文件流（用于存档）
 #include <sstream>
-#include <algorithm>
+#include <algorithm>   // 排序算法
 #include <cmath>
 #include <map>
 
 using namespace std;
 
+// --- 基础常量 ---
 const int SCREEN_WIDTH = 800;
 const int SCREEN_HEIGHT = 600;
-const int GROUND_HEIGHT = 60;
-const int FPS = 60;
+const int GROUND_HEIGHT = 60; // 地面高度
+const int FPS = 60;           // 目标帧率
 
+// --- 游戏状态机枚举 ---
 enum GameState {
-    STATE_MENU = 0,
-    STATE_PLAYING = 1,
-    STATE_PAUSED = 2,
-    STATE_GAME_OVER = 3,
-    STATE_LEADERBOARD = 4,
-    STATE_SETTINGS = 5,
-    STATE_HELP = 6,
-    STATE_CREDITS = 7
+    STATE_MENU = 0,       // 主菜单
+    STATE_PLAYING = 1,    // 游戏中
+    STATE_PAUSED = 2,     // 暂停
+    STATE_GAME_OVER = 3,  // 游戏结束
+    STATE_LEADERBOARD = 4,// 排行榜
+    STATE_SETTINGS = 5,   // 设置
+    STATE_HELP = 6,       // 帮助
+    STATE_CREDITS = 7     // 制作人员
 };
 
 const COLORREF COLOR_SKY_START = RGB(135, 206, 235);
@@ -51,12 +57,13 @@ const COLORREF COLOR_TEXT_GREEN = RGB(0, 255, 0);
 const COLORREF COLOR_TEXT_BLUE = RGB(0, 191, 255);
 const COLORREF COLOR_TEXT_PURPLE = RGB(128, 0, 128);
 
+// 排行榜得分条目
 struct ScoreEntry {
     string playerName;
     int score;
     int level;
-    time_t date;
-    int playTime;
+    time_t date;     // 记录日期
+    int playTime;    // 单局时长
 
     ScoreEntry() : playerName("Unknown"), score(0), level(1), date(time(0)), playTime(0) {}
     ScoreEntry(string name, int s, int l, int t) :
@@ -1665,3 +1672,4 @@ int main() {
     return 0;
 
 }
+
