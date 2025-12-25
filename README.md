@@ -16,6 +16,62 @@
 4. 用 Visual Studio 打开项目文件夹中的工程文件（`.sln` 后缀）；
 5. 点击「运行」按钮（或按 `F5` 键），即可启动游戏。
 
+
+## SFML 3.0.0 开发环境配置指南
+1. 环境要求
+- IDE: Visual Studio 2022 (建议版本 17.10+)
+- 标准: C++ 17 或更高版本 (SFML 3.0 要求)
+- 架构: x64 (本项目默认配置)
+2. 库文件准备
+请确保 SFML 3.0.0 已解压到你的电脑。本项目参考路径为：
+```
+D:\软件\SFML-3.0.0 (请根据你的实际路径修改以下配置)
+```
+3. Visual Studio 项目属性配置
+请右键点击项目 -> 属性，并在上方选择 配置：所有配置，平台：x64。
+
+- 包含目录 (Include)
+转到 C/C++ -> 常规 -> 附加包含目录
+添加：
+```
+D:\软件\SFML-3.0.0\include
+```
+
+- 库目录 (Linker Libs)
+转到 链接器 -> 常规 -> 附加库目录
+添加：
+```
+D:\软件\SFML-3.0.0\lib
+```
+
+- 链接器依赖项
+根据你的编译配置（Debug 或 Release），在 链接器 -> 输入 -> 附加依赖项 中添加：
+Debug 配置:
+```
+sfml-graphics-d.lib
+sfml-window-d.lib
+sfml-audio-d.lib
+sfml-network-d.lib
+sfml-system-d.lib
+```
+Release 配置:
+```
+sfml-graphics.lib
+sfml-window.lib
+sfml-audio.lib
+sfml-network.lib
+sfml-system.lib
+```
+DLL 文件 (非常重要)
+为了让程序运行，你需要将以下文件从 D:\软件\SFML-3.0.0\bin 复制到你的 项目输出目录 (通常是 x64\Debug 或 x64\Release)：
+```
+sfml-graphics-3.dll
+sfml-window-3.dll
+sfml-audio-3.dll
+sfml-system-3.dll
+```
+(以及其他你用到的组件对应的 DLL)
+
 ## 游戏玩法
 - 按空格键控制小鸟向上跳跃，松开则自由下落；
 - 躲避随机生成的上下管道障碍，不可触碰管道或窗口边界；
