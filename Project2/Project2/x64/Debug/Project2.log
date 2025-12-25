@@ -1,0 +1,22 @@
+﻿  Bird.cpp
+C:\Users\陈泓宇\Desktop\Project2\Bird.cpp(56,13): warning C4244: “=”: 从“int”转换到“float”，可能丢失数据
+C:\Users\陈泓宇\Desktop\Project2\Bird.cpp(61,43): warning C4244: “=”: 从“int”转换到“float”，可能丢失数据
+  FlappyBird.cpp
+C:\Users\陈泓宇\Desktop\Project2\FlappyBird.cpp(25,18): warning C4566: 由通用字符名称“\u2022”表示的字符不能在当前代码页(936)中表示出来
+C:\Users\陈泓宇\Desktop\Project2\FlappyBird.cpp(26,18): warning C4566: 由通用字符名称“\u2022”表示的字符不能在当前代码页(936)中表示出来
+C:\Users\陈泓宇\Desktop\Project2\FlappyBird.cpp(27,18): warning C4566: 由通用字符名称“\u2022”表示的字符不能在当前代码页(936)中表示出来
+C:\Users\陈泓宇\Desktop\Project2\FlappyBird.cpp(28,18): warning C4566: 由通用字符名称“\u2022”表示的字符不能在当前代码页(936)中表示出来
+C:\Users\陈泓宇\Desktop\Project2\FlappyBird.cpp(29,18): warning C4566: 由通用字符名称“\u2022”表示的字符不能在当前代码页(936)中表示出来
+C:\Users\陈泓宇\Desktop\Project2\FlappyBird.cpp(30,18): warning C4566: 由通用字符名称“\u2022”表示的字符不能在当前代码页(936)中表示出来
+C:\Users\陈泓宇\Desktop\Project2\FlappyBird.cpp(31,18): warning C4566: 由通用字符名称“\u2022”表示的字符不能在当前代码页(936)中表示出来
+C:\Users\陈泓宇\Desktop\Project2\FlappyBird.cpp(32,18): warning C4566: 由通用字符名称“\u2022”表示的字符不能在当前代码页(936)中表示出来
+C:\Users\陈泓宇\Desktop\Project2\FlappyBird.cpp(33,18): warning C4566: 由通用字符名称“\u2022”表示的字符不能在当前代码页(936)中表示出来
+  game.cpp
+C:\Users\陈泓宇\Desktop\Project2\game.cpp(74,17): warning C4244: “初始化”: 从“int”转换到“float”，可能丢失数据
+C:\Users\陈泓宇\Desktop\Project2\game.cpp(90,16): warning C4244: “=”: 从“int”转换到“float”，可能丢失数据
+C:\Users\陈泓宇\Desktop\Project2\game.cpp(91,16): warning C4244: “=”: 从“int”转换到“float”，可能丢失数据
+C:\Users\陈泓宇\Desktop\Project2\game.cpp(105,20): warning C4244: “=”: 从“int”转换到“float”，可能丢失数据
+  Pipemanager.cpp
+C:\Users\陈泓宇\Desktop\Project2\Pipemanager.cpp(11,16): warning C4244: “=”: 从“int”转换到“float”，可能丢失数据
+  正在生成代码...
+  Project2.vcxproj -> C:\Users\陈泓宇\Desktop\Project2\x64\Debug\Project2.exe
