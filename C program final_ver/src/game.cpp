@@ -1009,7 +1009,7 @@ void Game::drawMenu() {
     // 5. 循环绘制菜单项
     for (int i = 0; i < 7; i++) {
         // 调整了 Y 坐标起始位置（240），给上方的标题留出空间
-        int y = 240 + i * 45;
+        int y = 200 + i * 40;
 
         if (i == selectedMenu) {
             // --- 选中项的状态 ---
@@ -1027,14 +1027,14 @@ void Game::drawMenu() {
         else {
             // --- 未选中项的状态 ---
             settextstyle(28, 0, _T("Arial"));      // 普通字体
-            settextcolor(RGB(180, 180, 180));      // 灰色文字，表示未选中
+            settextcolor(RGB(100, 100, 100));      // 灰色文字，表示未选中
             outtextxy(SCREEN_WIDTH / 2 - textwidth(menuItems[i]) / 2, y, menuItems[i]);
         }
     }
 
     // 6. 绘制底部信息栏
     settextstyle(16, 0, _T("Consolas"));
-    settextcolor(RGB(220, 220, 220));
+    settextcolor(RGB(0, 0, 0));
 
     // 左下角：版本号
     outtextxy(10, SCREEN_HEIGHT - 30, L"Version 2.0 | Ultimate Edition");
