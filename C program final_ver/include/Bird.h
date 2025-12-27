@@ -58,6 +58,7 @@ public:
     float getX() const { return x; }                 // 获取X坐标
     float getY() const { return y; }                 // 获取Y坐标
     bool isAlive() const { return alive; }           // 检查是否存活
+    bool isDead() const { return !alive; }           // 检查是否死亡
     int getScoreMultiplier() const { return scoreMultiplier; } // 获取分数倍数
     int getComboCount() const { return comboCount; } // 获取连击次数
 

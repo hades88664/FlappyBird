@@ -8,6 +8,7 @@
 #include "../include/Bird.h"          // 包含小鸟类头文件
 #include "../include/Pipemanager.h"   // 包含管道管理器头文件
 #include "../include/AudioManager.h"
+#include <string>
 // ============================================================
 // Particle类方法的实现
 // ============================================================
@@ -218,6 +219,16 @@ void Game::init() {
         audio.loadSoundEffect("hit", "assets/hit.wav");
         audio.loadSoundEffect("menu_move", "assets/menu_move.wav"); // 菜单移动声
         audio.loadSoundEffect("menu_select", "assets/menu_select.wav"); // 菜单选择声
+        audio.loadSoundEffect("1", "assets/1.wav");
+        audio.loadSoundEffect("2", "assets/2.wav");
+        audio.loadSoundEffect("3", "assets/3.wav");
+        audio.loadSoundEffect("4", "assets/4.wav");
+        audio.loadSoundEffect("5", "assets/5.wav");
+
+        // --- 设置全局音量 ---
+        audio.setMasterVolume(100.0f); // 总音量
+        audio.setMusicVolume(30.0f);   // 背景音乐调小（30%），避免盖过游戏声
+        audio.setSoundsVolume(80.0f);  // 音效设为 80%，比较清晰
 
         // 开启背景音乐
         audio.playMusic("assets/bgm.mp3", true);
@@ -357,9 +368,10 @@ void Game::handleMenuInput() {
             startNewGame();      // 开始新游戏
             break;
         case 1:
-            // 继续游戏（需要有游戏进度）
-            if (score > 0) {
-                currentState = STATE_PLAYING;  // 切换到游戏状态
+            // 只要小鸟还没死，就可以继续（即暂停后回来）
+    // 或者判断 score > 0 且当前小鸟不是死亡状态
+            if (bird && !bird->isDead()) {
+                currentState = STATE_PLAYING;
             }
             break;
         case 2:
@@ -602,11 +614,25 @@ void Game::updateGameplay(float deltaTime) {
         AudioManager::getInstance().playSound("score");
         bird->addCombo();
 
-        // 每通过5个管道，提升等级和游戏速度
+		// 播放特殊音效逻辑
         if (pipesPassed % 5 == 0) {
+            // 如果是5的倍数，计算当前是第几个“5次循环”
+            // (pipesPassed / 5) 得到：1, 2, 3, 4, 5, 6...
+            // % 5 得到：1, 2, 3, 4, 0...
+            int specialIndex = ((pipesPassed / 5 - 1) % 5) + 1;
+
+            // 构造音频键名，如 "1", "2" ...
+            std::string soundName = std::to_string(specialIndex);
+            AudioManager::getInstance().playSound(soundName.c_str(), 100.0f);
+
+            // 每通过5个管道，提升等级和游戏速度
             level++;              // 等级提升
             gameSpeed += 0.2f;    // 游戏速度增加
             shakeScreen(3.0f);    // 屏幕震动效果
+        }
+        else {
+            // 不是5的倍数，播放普通得分音效
+            AudioManager::getInstance().playSound("score",50.0f);
         }
 
         // 更新最高分
