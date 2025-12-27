@@ -165,6 +165,9 @@ void Game::init() {
     //加载背景图片
     loadimage(&menuBackground, _T("assets/beginning.jpg"), SCREEN_WIDTH, SCREEN_HEIGHT);
 
+	//加载暂停背景图片
+	loadimage(&pauseBackground, _T("assets/pause.jpg"), SCREEN_WIDTH, SCREEN_HEIGHT);
+
     // 初始化动画效果变量
     animationTime = 0;      // 动画时间累计
     shakeTime = 0;          // 屏幕震动剩余时间
@@ -1045,42 +1048,41 @@ void Game::drawMenu() {
 }
 // 绘制暂停菜单
 void Game::drawPauseMenu() {
-    // 黑色半透明背景
-    setfillcolor(BLACK);
-    fillrectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+    // 1. 绘制你自己的背景图片
+    putimage(0, 0, &pauseBackground);
 
-    // 绘制"PAUSED"标题
-    settextstyle(64, 0, _T("Arial"));      // 64号大字体
-    settextcolor(COLOR_TEXT_YELLOW);       // 黄色文字
-    outtextxy(SCREEN_WIDTH / 2 - 120, 150, L"PAUSED");  // 屏幕中央
+    // 2. 绘制 "PAUSED" 标题（保留原有位置）
+    setbkmode(TRANSPARENT);
+    settextstyle(64, 0, _T("Arial Black"));
+    settextcolor(COLOR_TEXT_YELLOW);
+    const wchar_t* pausedTitle = L"PAUSED";
+    outtextxy(SCREEN_WIDTH / 2 - textwidth(pausedTitle) / 2, 150, pausedTitle);
 
-    // 绘制游戏信息
-    settextstyle(24, 0, _T("Arial"));      // 24号字体
-    settextcolor(COLOR_TEXT_WHITE);        // 白色文字
+    // 3. 绘制游戏信息（保留原有分数和等级显示）
+    settextstyle(24, 0, _T("Arial"));
+    settextcolor(COLOR_TEXT_WHITE);
 
-    wchar_t wbuffer[100];  // 格式化字符串缓冲区
-
-    // 显示当前分数
+    wchar_t wbuffer[100];
     swprintf_s(wbuffer, 100, L"Score: %d", score);
     outtextxy(SCREEN_WIDTH / 2 - textwidth(wbuffer) / 2, 240, wbuffer);
 
-    // 显示当前等级
     swprintf_s(wbuffer, 100, L"Level: %d", level);
     outtextxy(SCREEN_WIDTH / 2 - textwidth(wbuffer) / 2, 280, wbuffer);
 
-    // 绘制操作提示
-    settextstyle(20, 0, _T("Arial"));              // 20号字体
-    settextcolor(RGB(200, 200, 255));              // 浅蓝色文字
+    // 4. 绘制操作提示（保留原有的操作项说明）
+    settextstyle(20, 0, _T("Arial"));
+    settextcolor(RGB(100, 100, 100)); // 浅蓝色
 
-    // 继续游戏提示
-    outtextxy(SCREEN_WIDTH / 2 - 150, 350,
-        L"Press ESC or SPACE to continue");
-    // 重新开始游戏提示
-    outtextxy(SCREEN_WIDTH / 2 - 100, 380,
-        L"Press R to restart");
-    // 返回主菜单提示
-    outtextxy(SCREEN_WIDTH / 2 - 80, 410,
-        L"Press M for menu");
+    // 保持与 handlePauseInput 逻辑一致的操作提示
+    const wchar_t* tips[] = {
+        L"Press ESC or SPACE to continue",
+        L"Press R to restart",
+        L"Press M for menu"
+    };
+
+    for (int i = 0; i < 3; i++) {
+        outtextxy(SCREEN_WIDTH / 2 - textwidth(tips[i]) / 2, 350 + i * 30, tips[i]);
+    }
 }
 
 // 绘制游戏结束界面

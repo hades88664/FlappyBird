@@ -108,6 +108,9 @@ private:
     //¿ªÊ¼ÆÁÄ»±³¾°
     IMAGE menuBackground;
 
+    //ÔİÍ£ÆÁÄ»±³¾°
+	IMAGE pauseBackground;
+
     // ÓÎÏ·ÉèÖÃ
     float birdGravity;
     float birdJumpForce;
