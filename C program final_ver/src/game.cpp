@@ -162,6 +162,9 @@ void Game::init() {
     selectedMenu = 0;       // 菜单选择索引
     selectedSetting = 0;    // 设置选择索引
 
+    //加载背景图片
+    loadimage(&menuBackground, _T("assets/beginning.jpg"), SCREEN_WIDTH, SCREEN_HEIGHT);
+
     // 初始化动画效果变量
     animationTime = 0;      // 动画时间累计
     shakeTime = 0;          // 屏幕震动剩余时间
@@ -968,77 +971,78 @@ void Game::drawShakeEffect(int shakeX, int shakeY) {
 
 // 绘制主菜单界面
 void Game::drawMenu() {
-    // 黑色背景
-    setfillcolor(BLACK);  // 设置填充颜色为黑色
-    fillrectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);  // 填充整个屏幕
+    // 1. 绘制你要求的背景图片
+    // 注意：menuBackground 必须在 game.h 声明，并在 init() 中 loadimage
+    putimage(0, 0, &menuBackground);
 
-    // 绘制游戏标题
-    settextstyle(72, 0, _T("Arial"));      // 72号大字体
-    settextcolor(COLOR_TEXT_YELLOW);       // 黄色标题
-    const wchar_t* title = L"FLAPPY BIRD";  // 游戏标题
-    int titleWidth = textwidth(title);      // 获取标题宽度
-    // 在屏幕中央显示标题
-    outtextxy(SCREEN_WIDTH / 2 - titleWidth / 2, 80, title);
+    // 2. 增强视觉效果：绘制一个半透明的黑色遮罩，让背景图不干扰文字
+    // 如果你的 EasyX 版本不支持高级透明，这个循环会产生一种复古的扫描线效果
+    for (int i = 0; i < SCREEN_HEIGHT; i += 4) {
+        setlinecolor(RGB(0, 0, 0));
+        // line(0, i, SCREEN_WIDTH, i); // 如果觉得背景太亮，可以取消这行的注释
+    }
 
-    // 绘制副标题
-    settextstyle(28, 0, _T("Arial"));       // 28号字体
-    settextcolor(COLOR_TEXT_BLUE);          // 蓝色文字
-    // 显示"ULTIMATE EDITION"
-    outtextxy(SCREEN_WIDTH / 2 - 120, 160, L"ULTIMATE EDITION");
+    // 3. 绘制游戏大标题（保留原来的文字，但配色更高级）
+    setbkmode(TRANSPARENT);
+    const wchar_t* titleText = L"FLAPPY BIRD";
 
-    // 菜单项数组
+    // 绘制标题阴影（深色，偏移效果）
+    settextstyle(82, 0, _T("Arial Black"));
+    settextcolor(RGB(50, 20, 0));
+    outtextxy(SCREEN_WIDTH / 2 - textwidth(titleText) / 2 + 4, 84, titleText);
+
+    // 绘制标题主体（亮金色）
+    settextcolor(RGB(255, 215, 0));
+    outtextxy(SCREEN_WIDTH / 2 - textwidth(titleText) / 2, 80, titleText);
+
+    // 4. 定义菜单项：完全保留你原来的 7 个选项顺序
     const wchar_t* menuItems[] = {
-        L"START NEW GAME",    // 菜单项0：开始新游戏
-        L"CONTINUE",          // 菜单项1：继续游戏
-        L"LEADERBOARD",       // 菜单项2：排行榜
-        L"SETTINGS",          // 菜单项3：设置
-        L"HELP",              // 菜单项4：帮助
-        L"CREDITS",           // 菜单项5：制作人员
-        L"EXIT"               // 菜单项6：退出
+        L"START NEW GAME",    // 菜单项0
+        L"CONTINUE",          // 菜单项1
+        L"LEADERBOARD",       // 菜单项2
+        L"SETTINGS",          // 菜单项3
+        L"HELP",              // 菜单项4
+        L"CREDITS",           // 菜单项5
+        L"EXIT"               // 菜单项6
     };
 
-    settextstyle(28, 0, _T("Arial"));  // 设置菜单项字体
-
-    // 遍历所有菜单项并绘制
+    // 5. 循环绘制菜单项
     for (int i = 0; i < 7; i++) {
-        int y = 220 + i * 45;  // 计算每个菜单项的Y坐标（垂直间距45像素）
+        // 调整了 Y 坐标起始位置（240），给上方的标题留出空间
+        int y = 240 + i * 45;
 
-        // 根据是否选中设置不同的样式
         if (i == selectedMenu) {
-            // 当前选中的菜单项：红色、稍大的字体
-            settextcolor(COLOR_TEXT_RED);
-            settextstyle(32, 0, _T("Arial"));
+            // --- 选中项的状态 ---
+            settextstyle(32, 0, _T("Arial Black")); // 字体稍微变大变粗
+            settextcolor(RGB(255, 255, 255));       // 选中时文字变白
+
+            int itemWidth = textwidth(menuItems[i]);
+            outtextxy(SCREEN_WIDTH / 2 - itemWidth / 2, y, menuItems[i]);
+
+            // 在选中项两侧画两个发光的小圆点
+            setfillcolor(RGB(255, 215, 0));
+            solidcircle(SCREEN_WIDTH / 2 - itemWidth / 2 - 30, y + 16, 6);
+            solidcircle(SCREEN_WIDTH / 2 + itemWidth / 2 + 30, y + 16, 6);
         }
         else {
-            // 未选中的菜单项：白色、正常字体
-            settextcolor(COLOR_TEXT_WHITE);
-            settextstyle(28, 0, _T("Arial"));
-        }
-
-        int itemWidth = textwidth(menuItems[i]);  // 获取菜单项宽度
-        // 在屏幕中央显示菜单项
-        outtextxy(SCREEN_WIDTH / 2 - itemWidth / 2, y, menuItems[i]);
-
-        // 如果当前项被选中，在两侧绘制红色小圆点
-        if (i == selectedMenu) {
-            setfillcolor(COLOR_TEXT_RED);  // 红色填充
-            // 左侧圆点
-            solidcircle(SCREEN_WIDTH / 2 - itemWidth / 2 - 25, y + 15, 8);
-            // 右侧圆点
-            solidcircle(SCREEN_WIDTH / 2 + itemWidth / 2 + 25, y + 15, 8);
+            // --- 未选中项的状态 ---
+            settextstyle(28, 0, _T("Arial"));      // 普通字体
+            settextcolor(RGB(180, 180, 180));      // 灰色文字，表示未选中
+            outtextxy(SCREEN_WIDTH / 2 - textwidth(menuItems[i]) / 2, y, menuItems[i]);
         }
     }
 
-    // 绘制版本信息和操作提示
-    settextstyle(14, 0, _T("Arial"));          // 小号字体
-    settextcolor(RGB(150, 150, 150));          // 灰色文字
-    outtextxy(10, SCREEN_HEIGHT - 20,          // 左下角显示版本信息
-        L"Version 2.0 | Ultimate Edition");
-    // 在屏幕下方中央显示操作提示
-    outtextxy(SCREEN_WIDTH / 2 - 150, SCREEN_HEIGHT - 60,
-        L"Use ARROW KEYS to navigate, ENTER to select");
-}
+    // 6. 绘制底部信息栏
+    settextstyle(16, 0, _T("Consolas"));
+    settextcolor(RGB(220, 220, 220));
 
+    // 左下角：版本号
+    outtextxy(10, SCREEN_HEIGHT - 30, L"Version 2.0 | Ultimate Edition");
+
+    // 正下方：操作提示
+    const wchar_t* hint = L"Use ARROW KEYS to navigate, ENTER to select";
+    outtextxy(SCREEN_WIDTH / 2 - textwidth(hint) / 2, SCREEN_HEIGHT - 60, hint);
+}
 // 绘制暂停菜单
 void Game::drawPauseMenu() {
     // 黑色半透明背景

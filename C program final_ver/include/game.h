@@ -105,6 +105,9 @@ private:
     float shakeTime;
     float shakeIntensity;
 
+    //开始屏幕背景
+    IMAGE menuBackground;
+
     // 游戏设置
     float birdGravity;
     float birdJumpForce;
