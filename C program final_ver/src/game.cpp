@@ -9,6 +9,8 @@
 #include "../include/Pipemanager.h"   // 包含管道管理器头文件
 #include "../include/AudioManager.h"
 #include <string>
+#include <mmsystem.h>
+#pragma comment(lib, "Winmm.lib")
 // ============================================================
 // Particle类方法的实现
 // ============================================================
@@ -224,14 +226,14 @@ void Game::init() {
         audio.loadSoundEffect("3", "assets/3.wav");
         audio.loadSoundEffect("4", "assets/4.wav");
         audio.loadSoundEffect("5", "assets/5.wav");
+        audio.loadSoundEffect("ui_bgm", "assets/ui_bgm.wav");
+
 
         // --- 设置全局音量 ---
         audio.setMasterVolume(100.0f); // 总音量
         audio.setMusicVolume(30.0f);   // 背景音乐调小（30%），避免盖过游戏声
         audio.setSoundsVolume(80.0f);  // 音效设为 80%，比较清晰
 
-        // 开启背景音乐
-        audio.playMusic("assets/bgm.mp3", true);
         audioLoaded = true;
     }
 }
@@ -402,7 +404,7 @@ void Game::handleGameInput() {
         bird->jump();  // 调用小鸟跳跃方法
         // 在跳跃位置创建粒子效果
         createParticles(bird->getX(), bird->getY(), 8, RGB(255, 255, 0), 1);
-        AudioManager::getInstance().playSound("jump");
+        AudioManager::getInstance().playSound("jump",15.0f);
     }
     // ESC键：暂停游戏
     if (keyPressed[VK_ESCAPE]) {
@@ -547,8 +549,38 @@ void Game::handleCreditsInput() {
 
 // 游戏更新方法：根据时间更新游戏状态
 void Game::update(float deltaTime) {
-    animationTime += deltaTime;  // 累计动画时间
+    // --- 音频控制逻辑 ---
+    static bool isUIBGMPlaying = false;
+    const char* uiAlias = "UI_BGM_CHANNEL"; // 给 UI 音乐一个固定别名
 
+    if (currentState == STATE_MENU || currentState == STATE_PAUSED) {
+        if (!isUIBGMPlaying) {
+            // 1. 先关闭旧的（以防万一）
+            mciSendStringA("close UI_BGM_CHANNEL", NULL, 0, NULL);
+            // 2. 打开文件
+            mciSendStringA("open \"assets/ui_bgm.wav\" type mpegvideo alias UI_BGM_CHANNEL", NULL, 0, NULL);
+            // 3. 设置音量 (0-1000)
+            mciSendStringA("setaudio UI_BGM_CHANNEL volume to 300", NULL, 0, NULL);
+            // 4. 循环播放 (repeat)
+            mciSendStringA("play UI_BGM_CHANNEL repeat", NULL, 0, NULL);
+
+            isUIBGMPlaying = true;
+        }
+    }
+    else {
+        // 当状态不是菜单或暂停时（例如进入了 STATE_PLAYING）
+        if (isUIBGMPlaying) {
+            // --- 关键修改：瞬间停止并关闭通道 ---
+            mciSendStringA("stop UI_BGM_CHANNEL", NULL, 0, NULL);
+            mciSendStringA("close UI_BGM_CHANNEL", NULL, 0, NULL);
+
+            isUIBGMPlaying = false;
+        }
+    }
+    // --- 音频控制结束 ---
+
+
+    animationTime += deltaTime;  // 累计动画时间
     // 处理屏幕震动效果
     if (shakeTime > 0) {
         shakeTime -= deltaTime;          // 减少震动剩余时间
@@ -616,14 +648,31 @@ void Game::updateGameplay(float deltaTime) {
 
 		// 播放特殊音效逻辑
         if (pipesPassed % 5 == 0) {
-            // 如果是5的倍数，计算当前是第几个“5次循环”
-            // (pipesPassed / 5) 得到：1, 2, 3, 4, 5, 6...
-            // % 5 得到：1, 2, 3, 4, 0...
+            // 1. 计算当前应该是哪个数字（1, 2, 3, 4, 5）
             int specialIndex = ((pipesPassed / 5 - 1) % 5) + 1;
 
-            // 构造音频键名，如 "1", "2" ...
-            std::string soundName = std::to_string(specialIndex);
-            AudioManager::getInstance().playSound(soundName.c_str(), 100.0f);
+            // 2. 构造文件路径（assets/1.wav, assets/2.wav ...）
+            std::string soundPath = "assets/" + std::to_string(specialIndex) + ".wav";
+
+            // 3. 构造一个唯一的别名（例如：Channel_1, Channel_2 ...）
+            // 使用独立别名是“不被打断”的关键
+            std::string alias = "Channel_" + std::to_string(specialIndex);
+
+            // 4. 使用 MCI 命令播放
+            // 先关闭该别名（防止上次播放没结束导致无法重新打开）
+            mciSendStringA(("close " + alias).c_str(), NULL, 0, NULL);
+            // 打开文件并分配别名
+            std::string openCmd = "open \"" + soundPath + "\" type mpegvideo alias " + alias;
+            mciSendStringA(openCmd.c_str(), NULL, 0, NULL);
+
+            // 这里设置音量为 800 (范围 0-1000)，你可以根据需要修改这个数字
+            int volumeValue = 300;
+            std::string volCmd = "setaudio " + alias + " volume to " + std::to_string(volumeValue);
+            mciSendStringA(volCmd.c_str(), NULL, 0, NULL);
+
+            // 播放该别名（从头开始播放）
+            std::string playCmd = "play " + alias + " from 0";
+            mciSendStringA(playCmd.c_str(), NULL, 0, NULL);
 
             // 每通过5个管道，提升等级和游戏速度
             level++;              // 等级提升
