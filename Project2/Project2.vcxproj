@@ -135,12 +135,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\FlappyBirdxxy\FlappyBird\include\AudioManager.h" />
+    <ClInclude Include="include\AudioManager.h" />
     <ClInclude Include="include\Bird.h" />
     <ClInclude Include="include\constants.h" />
     <ClInclude Include="include\game.h" />
     <ClInclude Include="include\InputHandler.h" />
     <ClInclude Include="include\Pipemanager.h" />
+    <ClInclude Include="include\UserManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\AudioManager.cpp" />
@@ -149,6 +150,7 @@
     <ClCompile Include="src\game.cpp" />
     <ClCompile Include="src\InputHandler.cpp" />
     <ClCompile Include="src\Pipemanager.cpp" />
+    <ClCompile Include="src\UserManager.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

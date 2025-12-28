@@ -12,14 +12,47 @@
 #include <algorithm>
 #include <ctime>
 #include <windows.h>
+#include <set>      // 新增：用于存储解锁项
 #include "bird.h"
 #include "pipemanager.h"
 #include "constants.h"
+
+// 用户存档结构体
+struct UserData {
+    std::string name;
+    int totalScore;         // 累计总得分（用于商店兑换）
+    int highScore;          // 历史单局最高分
+    std::set<std::string> unlockedItems; // 已解锁的资源ID
+
+    UserData() : name(""), totalScore(0), highScore(0) {
+        unlockedItems.insert("default_bgm"); // 初始默认资源
+        unlockedItems.insert("jump_sfx");
+    }
+};
+
+// 用户管理器类
+class UserManager {
+private:
+    std::vector<UserData> users;
+    UserData* currentUser;
+    const std::string filename = "users.dat";
+
+public:
+    UserManager();
+    void loadUsers();
+    void saveUsers();
+    int login(const std::string& name); // 登录/创建逻辑
+    UserData* getCurrentUser() { return currentUser; }
+    std::vector<UserData>& getAllUsers() { return users; }
+    bool isItemUnlocked(const std::string& itemID);
+    bool unlockItem(const std::string& itemID, int cost);
+};
 
 // 分数记录结构体
 struct ScoreEntry {
     std::string playerName;
     int score;
+    int totalScore;         // 账户总得分
     int level;
     int playTime;
     time_t date;
@@ -80,6 +113,7 @@ private:
     // 游戏对象
     Bird* bird;
     PipeManager* pipeManager;
+    UserManager userManager;    // 新增：用户管理器实例
 
     // 游戏状态
     GameState currentState;
@@ -127,7 +161,9 @@ private:
     std::vector<Cloud> clouds;
     std::vector<ScoreEntry> leaderboard;
 
-    // 私有方法
+    // 私有方法 
+    void handleLoginInput();       
+    void handleShopInput();        
     void updateInput();
     void handleInput();
     void handleMenuInput();
@@ -138,10 +174,15 @@ private:
     void handleSettingsInput();
     void handleHelpInput();
     void handleCreditsInput();
+
     void adjustSetting(int direction);
     void applyDifficulty();
     void updateGameplay(float deltaTime);
     void updateParticles(float deltaTime);
+
+    // UI绘制
+    void drawLogin();              // 绘制登录背景或提示
+    void drawShop();               // 绘制商店界面
     void drawSkyBackground();
     void drawGround();
     void drawGameUI();
