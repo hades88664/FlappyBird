@@ -1,5 +1,5 @@
 
-
+#define _CRT_SECURE_NO_WARNINGS
 #include "../include/game.h"      // 包含游戏主头文件，定义游戏类和常量
 #include <iostream>
 #include <cmath>
@@ -159,9 +159,6 @@ void Game::init() {
     gameTime = 0;       // 游戏总时间
     pipesPassed = 0;    // 通过的管道数量
     nextPipeID = 0;     // 下一个管道的ID
-
-    // 初始化UI相关变量
-    playerName = "Player";  // 默认玩家名称
     selectedMenu = 0;       // 菜单选择索引
     selectedSetting = 0;    // 设置选择索引
 
@@ -212,62 +209,68 @@ void Game::init() {
     if (!leaderboard.empty()) {
         highScore = leaderboard[0].score;  // 取最高分记录
     }
+
+    // --- 音频资源注册 (只需注册一次) ---
     static bool audioLoaded = false; // 静态变量确保只加载一次
     if (!audioLoaded) {
         auto& audio = AudioManager::getInstance();
-        audio.loadSoundEffect("jump", "assets/jump.wav");
-        audio.loadSoundEffect("score", "assets/score.wav");
-        audio.loadSoundEffect("coin", "assets/coin.wav");
-        audio.loadSoundEffect("hit", "assets/hit.wav");
-        audio.loadSoundEffect("menu_move", "assets/menu_move.wav"); // 菜单移动声
-        audio.loadSoundEffect("menu_select", "assets/menu_select.wav"); // 菜单选择声
-        audio.loadSoundEffect("1", "assets/1.wav");
-        audio.loadSoundEffect("2", "assets/2.wav");
-        audio.loadSoundEffect("3", "assets/3.wav");
-        audio.loadSoundEffect("4", "assets/4.wav");
-        audio.loadSoundEffect("5", "assets/5.wav");
-        audio.loadSoundEffect("ui_bgm", "assets/ui_bgm.wav");
 
+        audio.registerAudio("menu_bgm", "assets/ui_bgm.wav", L"菜单音乐", 0, true);
 
-        // --- 设置全局音量 ---
-        audio.setMasterVolume(100.0f); // 总音量
-        audio.setMusicVolume(30.0f);   // 背景音乐调小（30%），避免盖过游戏声
-        audio.setSoundsVolume(80.0f);  // 音效设为 80%，比较清晰
+        // 1. 注册背景音乐 (ID, 路径, 显示名称, 价格, 是否是BGM)
+        audio.registerAudio("game_bgm", "assets/bgm1.wav", L"经典主题", 0, true);
+        audio.registerAudio("rock_bgm", "assets/rock.wav", L"重金属摇滚", 500, true);
+        audio.registerAudio("night_bgm", "assets/night.wav", L"宁静夜晚", 800, true);
 
+        // 2. 注册基础音效
+        audio.registerAudio("jump", "assets/jump.wav", L"普通跳跃", 0, false);
+        audio.registerAudio("score", "assets/score.wav", L"得分点", 0, false);
+        audio.registerAudio("hit", "assets/hit.wav", L"撞击", 0, false);
+        audio.registerAudio("coin", "assets/coin.wav", L"金币", 0, false);
+
+        // 3. 注册 1-5 数字连击音效
+        for (int i = 1; i <= 5; ++i) {
+            std::string id = "count" + std::to_string(i);
+            std::string path = "assets/" + std::to_string(i) + ".wav";
+            audio.registerAudio(id, path, L"连击音", 0, false);
+        }
+
+        // 设置初始音量
+        audio.setMusicVolume(30.0f);
+
+        // 默认启动菜单音乐
+        audio.playBGM("menu_bgm");
         audioLoaded = true;
     }
 }
 
+// --- 用户系统相关 ---
+void Game::addToLeaderboard() {
+    UserData* user = userManager.getCurrentUser();
+    if (user) {
+        // 更新账户总分和最高分
+        user->totalScore += score;
+        if (score > user->highScore) user->highScore = score;
+        userManager.saveUsers(); // 立即存盘
+    }
+    // 更新本地内存排行榜显示用
+    loadLeaderboard();
+}
+
 // 加载排行榜方法：从文件读取排行榜数据
 void Game::loadLeaderboard() {
-    leaderboard.clear();  // 清空当前排行榜
-
-    std::ifstream file("leaderboard.dat");  // 打开排行榜文件
-    if (file.is_open()) {  // 如果文件成功打开
-        std::string line;  // 用于存储每行数据
-
-        // 逐行读取文件
-        while (std::getline(file, line)) {
-            std::stringstream ss(line);  // 创建字符串流用于解析
-            std::string name;            // 玩家名称
-            int score, level, playTime; // 分数、等级、游戏时间
-            time_t date;            // 日期时间戳
-
-            // 从行中解析数据
-            ss >> name >> score >> level >> playTime >> date;
-
-            // 如果解析成功且名称不为空
-            if (!name.empty() && !ss.fail()) {
-                ScoreEntry entry(name, score, level, playTime);  // 创建分数记录
-                entry.date = date;  // 设置日期
-                leaderboard.push_back(entry);  // 添加到排行榜数组
-            }
-        }
-        file.close();  // 关闭文件
-
-        // 对排行榜进行排序（按分数降序，分数相同时按游戏时间升序）
-        std::sort(leaderboard.begin(), leaderboard.end());
+    // 现在的排行榜是从 UserManager 中获取所有用户并按总分排序
+    leaderboard.clear();
+    auto& allUsers = userManager.getAllUsers();
+    for (auto& u : allUsers) {
+        ScoreEntry entry(u.name, u.highScore, 0, 0); // 借用原来的结构展示
+        entry.totalScore = u.totalScore; // 假设 ScoreEntry 增加了这个字段
+        leaderboard.push_back(entry);
     }
+    // 按总分降序
+    std::sort(leaderboard.begin(), leaderboard.end(), [](const ScoreEntry& a, const ScoreEntry& b) {
+        return a.totalScore > b.totalScore;
+        });
 }
 
 // 保存排行榜方法：将排行榜数据写入文件
@@ -284,27 +287,6 @@ void Game::saveLeaderboard() {
                 << leaderboard[i].date << std::endl;  // 换行
         }
         file.close();  // 关闭文件
-    }
-}
-
-// 添加到排行榜方法：将当前游戏记录添加到排行榜
-void Game::addToLeaderboard() {
-    // 创建当前游戏的分数记录
-    ScoreEntry entry(playerName, score, level, (int)gameTime);
-    leaderboard.push_back(entry);  // 添加到排行榜数组
-
-    std::sort(leaderboard.begin(), leaderboard.end());  // 重新排序
-
-    // 如果超过10条记录，只保留前10名
-    if (leaderboard.size() > 10) {
-        leaderboard.resize(10);  // 调整数组大小为10
-    }
-
-    saveLeaderboard();  // 保存到文件
-
-    // 更新最高分
-    if (score > highScore) {
-        highScore = score;
     }
 }
 
@@ -344,6 +326,9 @@ void Game::handleInput() {
     case STATE_SETTINGS:
         handleSettingsInput();       // 设置界面输入处理
         break;
+    case STATE_SHOP:        
+        handleShopInput(); 
+        break;
     case STATE_HELP:
         handleHelpInput();           // 帮助界面输入处理
         break;
@@ -351,17 +336,23 @@ void Game::handleInput() {
         handleCreditsInput();        // 制作人员界面输入处理
         break;
     }
+
+    if (keyPressed[VK_SPACE]) {
+        bird->jump();
+        // 检查玩家解锁了哪个就播哪个，默认播 jump_sfx
+        AudioManager::getInstance().playSFX("jump_sfx");
+    }
 }
 
 // 主菜单输入处理方法：处理菜单导航和选择
 void Game::handleMenuInput() {
     // 上方向键：菜单项向上移动
     if (keyPressed[VK_UP]) {
-        selectedMenu = (selectedMenu - 1 + 7) % 7;  // 循环选择（7个菜单项）
+        selectedMenu = (selectedMenu - 1 + 8) % 8;  // 循环选择（7个菜单项）
     }
     // 下方向键：菜单项向下移动
     if (keyPressed[VK_DOWN]) {
-        selectedMenu = (selectedMenu + 1) % 7;  // 循环选择
+        selectedMenu = (selectedMenu + 1) % 8;  // 循环选择
     }
     // 回车键或空格键：确认选择
     if (keyPressed[VK_RETURN] || keyPressed[VK_SPACE]) {
@@ -379,17 +370,20 @@ void Game::handleMenuInput() {
         case 2:
             currentState = STATE_LEADERBOARD;  // 切换到排行榜界面
             break;
-        case 3:
+        case 3: 
+            currentState = STATE_SHOP;
+            break;                             // 进入商店
+        case 4:
             currentState = STATE_SETTINGS;     // 切换到设置界面
             selectedSetting = 0;               // 重置设置选择索引
             break;
-        case 4:
+        case 5:
             currentState = STATE_HELP;         // 切换到帮助界面
             break;
-        case 5:
+        case 6:
             currentState = STATE_CREDITS;      // 切换到制作人员界面
             break;
-        case 6:
+        case 7:
             closegraph();   // 关闭图形窗口
             exit(0);        // 退出程序
             break;
@@ -404,11 +398,13 @@ void Game::handleGameInput() {
         bird->jump();  // 调用小鸟跳跃方法
         // 在跳跃位置创建粒子效果
         createParticles(bird->getX(), bird->getY(), 8, RGB(255, 255, 0), 1);
-        AudioManager::getInstance().playSound("jump",15.0f);
+        AudioManager::getInstance().playSFX("jump");
     }
     // ESC键：暂停游戏
     if (keyPressed[VK_ESCAPE]) {
-        currentState = STATE_PAUSED;  // 切换到暂停状态
+        currentState = STATE_PAUSED;
+        // 切换到暂停界面的 UI 音乐
+        AudioManager::getInstance().playBGM("menu_bgm");
     }
     // R键：重新开始游戏
     if (keyPressed['R'] || keyPressed['r']) {
@@ -416,11 +412,38 @@ void Game::handleGameInput() {
     }
 }
 
+void Game::handleShopInput() {
+    if (keyPressed[VK_ESCAPE]) currentState = STATE_MENU;
+
+    auto& audio = AudioManager::getInstance();
+    auto* user = userManager.getCurrentUser();
+
+    // 简易逻辑：按数字键 1-3 尝试兑换/切换背景音乐
+    for (int i = 0; i < 3; ++i) {
+        if (keyPressed['1' + i]) {
+            std::string ids[] = { "menu_bgm", "rock_bgm", "night_bgm" };
+            std::string targetId = ids[i];
+            auto const& asset = audio.getLibrary().at(targetId);
+
+            if (userManager.isItemUnlocked(targetId)) {
+                audio.playBGM(targetId);
+            }
+            else if (user->totalScore >= asset.cost) {
+                if (userManager.unlockItem(targetId, asset.cost)) {
+                    audio.playBGM(targetId);
+                }
+            }
+        }
+    }
+}
+
 // 暂停状态输入处理方法
 void Game::handlePauseInput() {
     // ESC键或空格键：继续游戏
     if (keyPressed[VK_ESCAPE] || keyPressed[VK_SPACE]) {
-        currentState = STATE_PLAYING;  // 切换回游戏状态
+        currentState = STATE_PLAYING;
+        // 状态改变了，update里的检测逻辑会自动切换音乐，
+        AudioManager::getInstance().playBGM("game_bgm");
     }
     // M键：返回主菜单
     if (keyPressed['M'] || keyPressed['m']) {
@@ -549,36 +572,24 @@ void Game::handleCreditsInput() {
 
 // 游戏更新方法：根据时间更新游戏状态
 void Game::update(float deltaTime) {
-    // --- 音频控制逻辑 ---
-    static bool isUIBGMPlaying = false;
-    const char* uiAlias = "UI_BGM_CHANNEL"; // 给 UI 音乐一个固定别名
+    // --- 状态切换检测与音乐自动切换 ---
+    static GameState lastState = STATE_LOGIN;
+    if (currentState != lastState) {
+        auto& audio = AudioManager::getInstance();
 
-    if (currentState == STATE_MENU || currentState == STATE_PAUSED) {
-        if (!isUIBGMPlaying) {
-            // 1. 先关闭旧的（以防万一）
-            mciSendStringA("close UI_BGM_CHANNEL", NULL, 0, NULL);
-            // 2. 打开文件
-            mciSendStringA("open \"assets/ui_bgm.wav\" type mpegvideo alias UI_BGM_CHANNEL", NULL, 0, NULL);
-            // 3. 设置音量 (0-1000)
-            mciSendStringA("setaudio UI_BGM_CHANNEL volume to 300", NULL, 0, NULL);
-            // 4. 循环播放 (repeat)
-            mciSendStringA("play UI_BGM_CHANNEL repeat", NULL, 0, NULL);
-
-            isUIBGMPlaying = true;
+        // 逻辑：哪些状态播 UI 音乐
+        if (currentState == STATE_MENU || currentState == STATE_PAUSED ||
+            currentState == STATE_SHOP || currentState == STATE_LEADERBOARD) {
+            audio.playBGM("menu_bgm");
         }
-    }
-    else {
-        // 当状态不是菜单或暂停时（例如进入了 STATE_PLAYING）
-        if (isUIBGMPlaying) {
-            // --- 关键修改：瞬间停止并关闭通道 ---
-            mciSendStringA("stop UI_BGM_CHANNEL", NULL, 0, NULL);
-            mciSendStringA("close UI_BGM_CHANNEL", NULL, 0, NULL);
-
-            isUIBGMPlaying = false;
+        // 逻辑：哪些状态播 游戏 音乐
+        else if (currentState == STATE_PLAYING) {
+            audio.playBGM("game_bgm");
         }
-    }
-    // --- 音频控制结束 ---
 
+        lastState = currentState; // 更新旧状态，确保切换逻辑只在进入新状态的那一秒执行一次
+    }
+    // --- 音乐控制逻辑结束 ---
 
     animationTime += deltaTime;  // 累计动画时间
     // 处理屏幕震动效果
@@ -639,55 +650,30 @@ void Game::updateGameplay(float deltaTime) {
 
     // 检查小鸟是否通过管道
     if (pipeManager->checkPipePassed(bird->getX())) {
-        pipesPassed++;  // 增加通过的管道数量
-        // 计算得分：基础分1分乘以连击倍数
+        pipesPassed++;
         score += 1 * bird->getScoreMultiplier();
-        // --- 新增：得分音效 ---
-        AudioManager::getInstance().playSound("score");
         bird->addCombo();
 
-		// 播放特殊音效逻辑
+        auto& audio = AudioManager::getInstance();
+
         if (pipesPassed % 5 == 0) {
-            // 1. 计算当前应该是哪个数字（1, 2, 3, 4, 5）
-            int specialIndex = ((pipesPassed / 5 - 1) % 5) + 1;
+            // 计算 1-5 的索引
+            int idx = ((pipesPassed / 5 - 1) % 5) + 1;
+            std::string sfxId = "count" + std::to_string(idx);
+            audio.playSFX(sfxId); // 直接通过注册的ID播放
 
-            // 2. 构造文件路径（assets/1.wav, assets/2.wav ...）
-            std::string soundPath = "assets/" + std::to_string(specialIndex) + ".wav";
-
-            // 3. 构造一个唯一的别名（例如：Channel_1, Channel_2 ...）
-            // 使用独立别名是“不被打断”的关键
-            std::string alias = "Channel_" + std::to_string(specialIndex);
-
-            // 4. 使用 MCI 命令播放
-            // 先关闭该别名（防止上次播放没结束导致无法重新打开）
-            mciSendStringA(("close " + alias).c_str(), NULL, 0, NULL);
-            // 打开文件并分配别名
-            std::string openCmd = "open \"" + soundPath + "\" type mpegvideo alias " + alias;
-            mciSendStringA(openCmd.c_str(), NULL, 0, NULL);
-
-            // 这里设置音量为 800 (范围 0-1000)，你可以根据需要修改这个数字
-            int volumeValue = 300;
-            std::string volCmd = "setaudio " + alias + " volume to " + std::to_string(volumeValue);
-            mciSendStringA(volCmd.c_str(), NULL, 0, NULL);
-
-            // 播放该别名（从头开始播放）
-            std::string playCmd = "play " + alias + " from 0";
-            mciSendStringA(playCmd.c_str(), NULL, 0, NULL);
-
-            // 每通过5个管道，提升等级和游戏速度
-            level++;              // 等级提升
-            gameSpeed += 0.2f;    // 游戏速度增加
-            shakeScreen(3.0f);    // 屏幕震动效果
+            level++;
+            gameSpeed += 0.2f;
+            shakeScreen(3.0f);
         }
         else {
-            // 不是5的倍数，播放普通得分音效
-            AudioManager::getInstance().playSound("score",50.0f);
+            audio.playSFX("score"); // 普通得分音效
         }
+    }
 
-        // 更新最高分
-        if (score > highScore) {
-            highScore = score;
-        }
+    // 更新最高分
+    if (score > highScore) {
+        highScore = score;
     }
 
     // 更新管道生成计时器
@@ -757,6 +743,8 @@ void Game::startNewGame() {
     applyDifficulty();  // 应用当前难度设置
 
     currentState = STATE_PLAYING;  // 切换到游戏状态
+    // 开始播放游戏背景音乐
+    AudioManager::getInstance().playBGM("game_bgm");
 }
 
 // 游戏结束方法：处理游戏结束逻辑
@@ -764,7 +752,7 @@ void Game::gameOver() {
     bird->kill();  // 设置小鸟为死亡状态
 
     // --- 新增：撞击音效 ---
-    AudioManager::getInstance().playSound("hit");
+    AudioManager::getInstance().playSFX("hit");
 
     // 创建游戏结束粒子效果（红色轨迹效果）
     createParticles(bird->getX(), bird->getY(), 50, RGB(255, 50, 50), 2);
@@ -844,6 +832,9 @@ void Game::render() {
     case STATE_CREDITS:
         drawCredits();     // 绘制制作人员界面
         break;
+    case STATE_SHOP:        
+        drawShop(); 
+        break;
     }
 
     // 如果开启了FPS显示，绘制FPS
@@ -857,6 +848,41 @@ void Game::render() {
     }
 
     FlushBatchDraw();  // 结束批量绘制，实际显示到屏幕
+}
+
+// 独立的商店绘制函数 (不要写在 switch 里)
+void Game::drawShop() {
+    setfillcolor(RGB(20, 20, 30));
+    fillrectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+
+    auto& audio = AudioManager::getInstance();
+    auto* user = userManager.getCurrentUser();
+
+    settextstyle(40, 0, L"Arial");
+    settextcolor(YELLOW);
+    outtextxy(SCREEN_WIDTH / 2 - 80, 50, L"音乐商店");
+
+    settextstyle(20, 0, L"Arial");
+    wchar_t buf[100];
+    swprintf_s(buf, L"您的账户总分: %d", user->totalScore);
+    outtextxy(100, 110, buf);
+
+    int i = 0;
+    for (auto const& [id, asset] : audio.getLibrary()) {
+        if (!asset.isBGM) continue;
+
+        int y = 180 + i * 50;
+        bool isUnlocked = userManager.isItemUnlocked(id);
+
+        settextcolor(isUnlocked ? GREEN : WHITE);
+        swprintf_s(buf, L"按 %d: %s [%s] - 价格: %d",
+            i + 1, asset.displayName.c_str(), isUnlocked ? L"已拥有" : L"未解锁", asset.cost);
+
+        outtextxy(100, y, buf);
+        i++;
+    }
+    settextcolor(RGB(128,128,128));
+    outtextxy(100, SCREEN_HEIGHT - 60, L"按 ESC 返回菜单");
 }
 
 // 绘制天空背景：创建渐变天空效果
@@ -1078,6 +1104,7 @@ void Game::drawMenu() {
         L"START NEW GAME",    // 菜单项0
         L"CONTINUE",          // 菜单项1
         L"LEADERBOARD",       // 菜单项2
+        L"SHOP",
         L"SETTINGS",          // 菜单项3
         L"HELP",              // 菜单项4
         L"CREDITS",           // 菜单项5
@@ -1085,9 +1112,9 @@ void Game::drawMenu() {
     };
 
     // 5. 循环绘制菜单项
-    for (int i = 0; i < 7; i++) {
-        // 调整了 Y 坐标起始位置（240），给上方的标题留出空间
-        int y = 200 + i * 40;
+    for (int i = 0; i < 8; i++) {
+        // 调整了 Y 坐标起始位置（200），给上方的标题留出空间
+        int y = 200 + i * 35;
 
         if (i == selectedMenu) {
             // --- 选中项的状态 ---
@@ -1574,6 +1601,30 @@ void Game::run() {
     initgraph(SCREEN_WIDTH, SCREEN_HEIGHT);  // 创建指定大小的窗口
     setbkcolor(BLACK);                        // 设置背景颜色为黑色
 
+    // --- 用户登录逻辑 ---
+    wchar_t wname[20];
+    bool loginSuccess = false;
+    while (!loginSuccess) {
+        if (InputBox(wname, 20, L"请输入用户名", L"Flappy Bird 登录", L"Player1")) {
+            char n[20];
+            sprintf(n, "%ls", wname);
+            int res = userManager.login(n);
+            if (res == 0 || res == 1) {
+                playerName = n;
+                loginSuccess = true;
+            }
+            else {
+                MessageBox(GetHWnd(), L"用户名冲突，请重试", L"错误", MB_OK);
+            }
+        }
+        else {
+            exit(0);
+        }
+    }
+
+    // 登录后播放菜单音乐
+    AudioManager::getInstance().playBGM("menu_bgm");
+    
     // 初始化随机数种子
     srand((unsigned)time(NULL));  // 使用当前时间作为随机种子
 

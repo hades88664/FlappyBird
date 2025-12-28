@@ -21,7 +21,9 @@ enum GameState {
     STATE_LEADERBOARD,
     STATE_SETTINGS,
     STATE_HELP,
-    STATE_CREDITS
+    STATE_CREDITS,
+    STATE_LOGIN,   // 登录
+    STATE_SHOP   // 商店 (新增)
 };
 
 // 颜色常量
