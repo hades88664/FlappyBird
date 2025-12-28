@@ -18,9 +18,6 @@
     <ClInclude Include="..\..\..\FlappyBirdxxy\FlappyBird\include\AudioManager.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\FlappyBirdxxy\FlappyBird\include\InputHandler.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="include\Bird.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -33,11 +30,11 @@
     <ClInclude Include="include\constants.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="include\InputHandler.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\FlappyBirdxxy\FlappyBird\src\InputHandler.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="src\Bird.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -51,6 +48,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="src\AudioManager.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\InputHandler.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

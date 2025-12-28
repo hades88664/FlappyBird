@@ -132,18 +132,18 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\FlappyBirdxxy\FlappyBird\include\AudioManager.h" />
-    <ClInclude Include="..\..\..\FlappyBirdxxy\FlappyBird\include\InputHandler.h" />
     <ClInclude Include="include\Bird.h" />
     <ClInclude Include="include\constants.h" />
     <ClInclude Include="include\game.h" />
+    <ClInclude Include="include\InputHandler.h" />
     <ClInclude Include="include\Pipemanager.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\FlappyBirdxxy\FlappyBird\src\InputHandler.cpp" />
     <ClCompile Include="src\AudioManager.cpp" />
     <ClCompile Include="src\Bird.cpp" />
     <ClCompile Include="src\FlappyBird.cpp" />
     <ClCompile Include="src\game.cpp" />
+    <ClCompile Include="src\InputHandler.cpp" />
     <ClCompile Include="src\Pipemanager.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
