@@ -1,0 +1,6 @@
+﻿  game.cpp
+C:\Users\陈泓宇\Downloads\FlappyBird-main (2)\FlappyBird-main\Project2\src\game.cpp(82,17): warning C4244: “初始化”: 从“int”转换到“float”，可能丢失数据
+C:\Users\陈泓宇\Downloads\FlappyBird-main (2)\FlappyBird-main\Project2\src\game.cpp(98,16): warning C4244: “=”: 从“int”转换到“float”，可能丢失数据
+C:\Users\陈泓宇\Downloads\FlappyBird-main (2)\FlappyBird-main\Project2\src\game.cpp(99,16): warning C4244: “=”: 从“int”转换到“float”，可能丢失数据
+C:\Users\陈泓宇\Downloads\FlappyBird-main (2)\FlappyBird-main\Project2\src\game.cpp(113,20): warning C4244: “=”: 从“int”转换到“float”，可能丢失数据
+  Project2.vcxproj -> C:\Users\陈泓宇\Downloads\FlappyBird-main (2)\FlappyBird-main\Project2\x64\Debug\C program final_ver.exe

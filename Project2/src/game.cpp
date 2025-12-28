@@ -483,13 +483,13 @@ void Game::handleSettingsInput() {
 void Game::adjustSetting(int direction) {
     switch (selectedSetting) {  // 根据当前选中的设置项
     case 0:  // 重力设置
-        birdGravity += direction * 0.1f;  // 按0.1的步长调整
+        birdGravity -= direction * 0.1f;  // 按0.1的步长调整
         // 限制重力范围（0.2到1.5之间）
         if (birdGravity < 0.2f) birdGravity = 0.2f;
         if (birdGravity > 1.5f) birdGravity = 1.5f;
         break;
     case 1:  // 跳跃力量设置
-        birdJumpForce += direction * 0.5f;  // 按0.5的步长调整
+        birdJumpForce -= direction * 0.5f;  // 按0.5的步长调整
         // 限制跳跃力量范围（-12到-5之间，负数表示向上）
         if (birdJumpForce > -5.0f) birdJumpForce = -5.0f;
         if (birdJumpForce < -12.0f) birdJumpForce = -12.0f;
@@ -511,18 +511,18 @@ void Game::adjustSetting(int direction) {
 void Game::applyDifficulty() {
     switch (difficulty) {  // 根据难度等级
     case 0:  // 简单模式
-        birdGravity = 0.4f;      // 较小的重力
-        birdJumpForce = -7.5f;   // 较小的跳跃力量
+        birdGravity = 0.3f;      // 较小的重力
+        birdJumpForce = -5.0f;   // 较小的跳跃力量
         gameSpeed = 2.5f;        // 较慢的游戏速度
         break;
     case 1:  // 普通模式（默认）
-        birdGravity = 0.5f;      // 标准重力
-        birdJumpForce = -8.5f;   // 标准跳跃力量
+        birdGravity = 0.3f;      // 标准重力
+        birdJumpForce = -6.5f;   // 标准跳跃力量
         gameSpeed = 3.0f;        // 标准游戏速度
         break;
     case 2:  // 困难模式
-        birdGravity = 0.6f;      // 较大的重力
-        birdJumpForce = -9.5f;   // 较大的跳跃力量
+        birdGravity = 0.4f;      // 较大的重力
+        birdJumpForce = -7.5f;   // 较大的跳跃力量
         gameSpeed = 3.5f;        // 较快的游戏速度
         break;
     }
