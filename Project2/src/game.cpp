@@ -227,6 +227,9 @@ void Game::init() {
         audio.registerAudio("score", "assets/score.wav", L"得分点", 0, false);
         audio.registerAudio("hit", "assets/hit.wav", L"撞击", 0, false);
         audio.registerAudio("coin", "assets/coin.wav", L"金币", 0, false);
+        // 在 init() 函数里的音频注册部分添加这一行
+        audio.registerAudio("die", "assets/die1.wav", L"死亡音效", 0, false);
+        audio.registerAudio("over_bgm", "assets/gameover.wav", L"结束音乐", 0, true);
 
         // 3. 注册 1-5 数字连击音效
         for (int i = 1; i <= 5; ++i) {
@@ -235,6 +238,7 @@ void Game::init() {
             audio.registerAudio(id, path, L"连击音", 0, false);
         }
 
+
         // 设置初始音量
         audio.setMusicVolume(30.0f);
 
@@ -242,6 +246,7 @@ void Game::init() {
         audio.playBGM("menu_bgm");
         audioLoaded = true;
     }
+    AudioManager::getInstance().registerAudio("die", "assets/die1.wav", L"死亡音效", 0, false);
 }
 
 // --- 用户系统相关 ---
@@ -750,9 +755,12 @@ void Game::startNewGame() {
 // 游戏结束方法：处理游戏结束逻辑
 void Game::gameOver() {
     bird->kill();  // 设置小鸟为死亡状态
-
     // --- 新增：撞击音效 ---
+
     AudioManager::getInstance().playSFX("hit");
+    AudioManager::getInstance().playBGM("over_bgm"); // 会自动停止上一首并播放新的
+    AudioManager::getInstance().playSFX("die");
+ // 紧接着播放死亡/掉落音效
 
     // 创建游戏结束粒子效果（红色轨迹效果）
     createParticles(bird->getX(), bird->getY(), 50, RGB(255, 50, 50), 2);
